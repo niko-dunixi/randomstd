@@ -34,7 +34,7 @@ func benchmark(count, size int, action func(size int) int64) []int64 {
 }
 
 func simpleConcurrentRandom(size int) int64 {
-	random := rand.New(singleton.NewSource(time.Now().UnixNano()))
+	random := rand.New(safe.NewSource(time.Now().UnixNano()))
 	wg := sync.WaitGroup{}
 	wg.Add(size)
 	start := time.Now()

@@ -1,4 +1,4 @@
-package singleton
+package safe
 
 import (
 	"math/rand"
