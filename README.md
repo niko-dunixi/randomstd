@@ -28,7 +28,7 @@ You can use it however you want. All you have to do is
 pass in a function pointer that matches the following
 signature, consuming a random pointer and returning void:
 
-```
+```go
 type RandomPoolJob func(rand *rand.Rand)
 ```
 
@@ -36,7 +36,7 @@ A potentially time-expensive example is the need to generate
 UUIDs randomly in a time efficient manor like this example
 demonstrates:
 
-```
+```go
 package main
 
 import (
