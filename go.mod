@@ -1,3 +1,3 @@
-module github.com/paul-nelson-baker/concurrent-random
+module github.com/paul-nelson-baker/randomstd
 
 go 1.13

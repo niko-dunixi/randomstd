@@ -50,7 +50,7 @@ func saveBenchmarks(filename string, benchmarks map[string][]bench) error {
 	if !strings.HasSuffix(filename, ".json") {
 		filename += ".json"
 	}
-	allBytes, err := json.Marshal(benchmarks)
+	allBytes, err := json.MarshalIndent(benchmarks, "", "  ")
 	if err != nil {
 		return err
 	}
