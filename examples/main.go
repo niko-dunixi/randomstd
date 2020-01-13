@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"github.com/paul-nelson-baker/concurrent-random/pool"
+	"github.com/paul-nelson-baker/randomstd/pool"
 	"log"
 	"math/rand"
 	"strconv"

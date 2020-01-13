@@ -1,8 +1,10 @@
 package pool
 
 import (
+	"github.com/paul-nelson-baker/randomstd"
 	"math/rand"
 	"testing"
+	"time"
 )
 
 func TestNewInvalidSizeZero(t *testing.T) {
@@ -48,5 +50,22 @@ func TestAtomicOffsetRandomConstructor(t *testing.T) {
 	}
 	for i := 0; i < count; i++ {
 		<-intsChannel
+	}
+}
+
+func TestInterface(t *testing.T) {
+	seedValue := time.Now().UnixNano()
+
+	var randomPool randomstd.Random = New(1, func() *rand.Rand {
+		return rand.New(rand.NewSource(seedValue))
+	})
+	var randomSingle randomstd.Random = rand.New(rand.NewSource(seedValue))
+
+	for i := 0; i < 1000; i++ {
+		a := randomPool.Int()
+		b := randomSingle.Int()
+		if a != b {
+			t.Errorf("Values diverged, but should not have.")
+		}
 	}
 }

@@ -2,6 +2,7 @@ package pool
 
 import (
 	"fmt"
+	"github.com/paul-nelson-baker/randomstd"
 	"math/rand"
 	"sync"
 	"time"
@@ -10,6 +11,7 @@ import (
 type RandomPoolJob func(rand *rand.Rand)
 
 type RandomPool interface {
+	randomstd.Random
 	Work(job RandomPoolJob)
 }
 
@@ -60,7 +62,7 @@ func New(size int, rc RandomConstructor) RandomPool {
 		}()
 	}
 	wg.Wait()
-	return pool
+	return &pool
 }
 
 func (p pool) Work(job RandomPoolJob) {
