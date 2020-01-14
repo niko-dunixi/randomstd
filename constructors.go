@@ -2,23 +2,26 @@ package randomstd
 
 import (
 	"math/rand"
-	"sync/atomic"
+	"sync"
 	"time"
 )
 
 type Constructor func() Random
 
 var (
-	rootSeed       = time.Now().UnixNano()
-	offset   int64 = 0
+	rootSeed        = time.Now().UnixNano()
+	offset    int64 = 0
+	mutexSeed       = sync.Mutex{}
 )
 
 // If we call UnixNano fast enough, we could potentially get the same seed.
 // This constructor will call UnixNano once, and then offset it by one for
 // every call thereafter creating divergent randomness.
 func AtomicOffsetConstructor() Random {
+	mutexSeed.Lock()
 	seed := rootSeed + offset
-	atomic.AddInt64(&offset, 1)
+	offset += 1
+	mutexSeed.Unlock()
 	return NaiveSeededConstructor(seed)
 }
 
