@@ -1,6 +1,6 @@
 // +build go1.8
 
-package pool
+package randpool
 
 import (
 	"github.com/paul-nelson-baker/randomstd"

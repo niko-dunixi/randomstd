@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/paul-nelson-baker/randomstd"
-	"github.com/paul-nelson-baker/randomstd/pool"
-	"github.com/paul-nelson-baker/randomstd/safe"
+	"github.com/paul-nelson-baker/randomstd/randpool"
+	"github.com/paul-nelson-baker/randomstd/randsafe"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -77,7 +77,7 @@ func benchmark(count, size int, action func(size int) int64) bench {
 }
 
 func simpleConcurrentRandom(size int) int64 {
-	random := rand.New(safe.NewSource(time.Now().UnixNano()))
+	random := rand.New(randsafe.NewSource(time.Now().UnixNano()))
 	wg := sync.WaitGroup{}
 	wg.Add(size)
 	start := time.Now()
@@ -93,7 +93,7 @@ func simpleConcurrentRandom(size int) int64 {
 }
 
 func createPooledConcurrentRandom(poolSize int) func(size int) int64 {
-	randomPool := pool.New(poolSize, randomstd.NaiveConstructor)
+	randomPool := randpool.New(poolSize, randomstd.NaiveConstructor)
 	a := func(size int) int64 {
 		wg := sync.WaitGroup{}
 		wg.Add(size)

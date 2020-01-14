@@ -1,4 +1,4 @@
-package safe
+package randsafe
 
 import (
 	"math/rand"

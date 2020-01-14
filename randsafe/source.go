@@ -1,4 +1,4 @@
-package safe
+package randsafe
 
 // Almost all this code is stolen from the Go rand package.
 // Their concurrent code is package private because it is

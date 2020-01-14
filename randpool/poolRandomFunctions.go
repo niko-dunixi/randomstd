@@ -1,4 +1,4 @@
-package pool
+package randpool
 
 import (
 	"github.com/paul-nelson-baker/randomstd"
