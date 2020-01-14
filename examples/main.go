@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
+	"github.com/paul-nelson-baker/randomstd"
 	"github.com/paul-nelson-baker/randomstd/pool"
 	"log"
-	"math/rand"
 	"strconv"
 	"sync"
 )
@@ -20,9 +20,9 @@ func main() {
 	// borrow it and let it return to the pool afterwards!
 	randomPool := pool.New(150, pool.AtomicOffsetRandomConstructor)
 	for i := 0; i < count; i++ {
-		go randomPool.Work(func(rand *rand.Rand) {
+		go randomPool.Work(func(r randomstd.Random) {
 			defer wg.Done()
-			uuidChannel <- lameUUID(rand)
+			uuidChannel <- lameUUID(r)
 		})
 	}
 
@@ -36,31 +36,31 @@ func main() {
 	close(uuidChannel)
 }
 
-func lameUUID(random *rand.Rand) string {
+func lameUUID(r randomstd.Random) string {
 	b := bytes.Buffer{}
 	for i := 0; i < 8; i++ {
-		b.WriteString(value(random))
+		b.WriteString(value(r))
 	}
 	b.WriteString("-")
 	for i := 0; i < 4; i++ {
-		b.WriteString(value(random))
+		b.WriteString(value(r))
 	}
 	b.WriteString("-")
 	for i := 0; i < 4; i++ {
-		b.WriteString(value(random))
+		b.WriteString(value(r))
 	}
 	b.WriteString("-")
 	for i := 0; i < 4; i++ {
-		b.WriteString(value(random))
+		b.WriteString(value(r))
 	}
 	b.WriteString("-")
 	for i := 0; i < 12; i++ {
-		b.WriteString(value(random))
+		b.WriteString(value(r))
 	}
 	return b.String()
 }
 
-func value(random *rand.Rand) string {
-	i := random.Int63n(16)
+func value(r randomstd.Random) string {
+	i := r.Int63n(16)
 	return strconv.FormatInt(i, 16)
 }

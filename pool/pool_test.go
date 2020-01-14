@@ -30,8 +30,8 @@ func TestNaiveRandomConstructor(t *testing.T) {
 	intsChannel := make(chan int, count)
 	randomPool := New(100, NaiveRandomConstructor)
 	for i := 0; i < count; i++ {
-		randomPool.Work(func(rand *rand.Rand) {
-			intsChannel <- rand.Int()
+		randomPool.Work(func(r randomstd.Random) {
+			intsChannel <- r.Int()
 		})
 	}
 	for i := 0; i < count; i++ {
@@ -44,8 +44,8 @@ func TestAtomicOffsetRandomConstructor(t *testing.T) {
 	intsChannel := make(chan int, count)
 	randomPool := New(100, AtomicOffsetRandomConstructor)
 	for i := 0; i < count; i++ {
-		randomPool.Work(func(rand *rand.Rand) {
-			intsChannel <- rand.Int()
+		randomPool.Work(func(r randomstd.Random) {
+			intsChannel <- r.Int()
 		})
 	}
 	for i := 0; i < count; i++ {

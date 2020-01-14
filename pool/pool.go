@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type RandomPoolJob func(rand *rand.Rand)
+type RandomPoolJob func(r randomstd.Random)
 
 type RandomPool interface {
 	randomstd.Random
