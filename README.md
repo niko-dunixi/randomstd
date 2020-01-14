@@ -1,4 +1,4 @@
-# Concurrent Random
+# randomstd
 ## Abstract
 GoLang has first class concurrency, which is AWESOME!
 
@@ -40,43 +40,36 @@ demonstrates:
 package main
 
 import (
-	"bytes"
 	"github.com/paul-nelson-baker/randomstd"
 	"github.com/paul-nelson-baker/randomstd/pool"
 	"log"
 	"strconv"
-	"sync"
+	"strings"
 )
 
 func main() {
 	count := 100_000
-	wg := sync.WaitGroup{}
-	wg.Add(count)
 	uuidChannel := make(chan string)
 
 	// The magic happens here, we kick off our `n` goroutines
 	// and not worry about managing the random itself. We just
-	// borrow it and let it return to the pool afterwards!
-	randomPool := pool.New(150, pool.AtomicOffsetRandomConstructor)
+	// call random's methods like normal and let the concurrency
+	// magic happen on its own!
+	var r randomstd.Random = pool.New(150, pool.AtomicOffsetRandomConstructor)
 	for i := 0; i < count; i++ {
-		go randomPool.Work(func(r randomstd.Random) {
-			defer wg.Done()
+		go func() {
 			uuidChannel <- lameUUID(r)
-		})
+		}()
 	}
 
-	go func() {
-		for i := 0; i < count; i++ {
-			log.Println(<-uuidChannel)
-		}
-	}()
-
-	wg.Wait()
+	for i := 0; i < count; i++ {
+		log.Println(<-uuidChannel)
+	}
 	close(uuidChannel)
 }
 
 func lameUUID(r randomstd.Random) string {
-	b := bytes.Buffer{}
+	b := strings.Builder{}
 	for i := 0; i < 8; i++ {
 		b.WriteString(value(r))
 	}
@@ -103,4 +96,5 @@ func value(r randomstd.Random) string {
 	i := r.Int63n(16)
 	return strconv.FormatInt(i, 16)
 }
+
 ```
