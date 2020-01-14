@@ -3,55 +3,28 @@ package pool
 import (
 	"fmt"
 	"github.com/paul-nelson-baker/randomstd"
-	"math/rand"
 	"sync"
-	"time"
 )
 
-type RandomPoolJob func(r randomstd.Random)
+type RandomPoolTask func(r randomstd.Random)
 
 type RandomPool interface {
 	randomstd.Random
-	Work(job RandomPoolJob)
+	Work(task RandomPoolTask)
 }
 
 type pool struct {
-	workers chan *rand.Rand
+	workers chan randomstd.Random
 }
 
-type RandomConstructor func() *rand.Rand
-
-var (
-	rootSeed       = time.Now().UnixNano()
-	offset   int64 = 0
-	mutex          = sync.Mutex{}
-)
-
-// The most basic creation of a random that utilizes UnixNano
-func NaiveRandomConstructor() *rand.Rand {
-	return rand.New(rand.NewSource(time.Now().UnixNano()))
-}
-
-// If we call UnixNano fast enough, we could potentially get the same seed.
-// This constructor will call UnixNano once, and then offset it by one for
-// every call thereafter creating divergent randomness.
-func AtomicOffsetRandomConstructor() *rand.Rand {
-	mutex.Lock()
-	seed := rootSeed + offset
-	offset += 1
-	mutex.Unlock()
-
-	return rand.New(rand.NewSource(seed))
-}
-
-func New(size int, rc RandomConstructor) RandomPool {
+func New(size int, rc randomstd.Constructor) RandomPool {
 	if size <= 0 {
 		err := fmt.Errorf("must be a positive initger, but was provided size: %d", size)
 		panic(err)
 	}
 
 	pool := pool{
-		workers: make(chan *rand.Rand, size),
+		workers: make(chan randomstd.Random, size),
 	}
 	wg := sync.WaitGroup{}
 	wg.Add(size)
@@ -65,10 +38,10 @@ func New(size int, rc RandomConstructor) RandomPool {
 	return &pool
 }
 
-func (p pool) Work(job RandomPoolJob) {
+func (p pool) Work(task RandomPoolTask) {
 	r := <-p.workers
 	defer func() {
 		p.workers <- r
 	}()
-	job(r)
+	task(r)
 }

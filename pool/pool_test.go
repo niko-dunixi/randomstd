@@ -2,7 +2,6 @@ package pool
 
 import (
 	"github.com/paul-nelson-baker/randomstd"
-	"math/rand"
 	"testing"
 	"time"
 )
@@ -13,7 +12,7 @@ func TestNewInvalidSizeZero(t *testing.T) {
 			t.Errorf("this should have failed, but did not")
 		}
 	}()
-	New(0, NaiveRandomConstructor)
+	New(0, randomstd.NaiveConstructor)
 }
 
 func TestNewInvalidSizeNegative(t *testing.T) {
@@ -22,13 +21,13 @@ func TestNewInvalidSizeNegative(t *testing.T) {
 			t.Errorf("this should have failed, but did not")
 		}
 	}()
-	New(-1, NaiveRandomConstructor)
+	New(-1, randomstd.NaiveConstructor)
 }
 
 func TestNaiveRandomConstructor(t *testing.T) {
 	count := 100
 	intsChannel := make(chan int, count)
-	randomPool := New(100, NaiveRandomConstructor)
+	randomPool := New(100, randomstd.NaiveConstructor)
 	for i := 0; i < count; i++ {
 		randomPool.Work(func(r randomstd.Random) {
 			intsChannel <- r.Int()
@@ -41,25 +40,25 @@ func TestNaiveRandomConstructor(t *testing.T) {
 
 func TestAtomicOffsetRandomConstructor(t *testing.T) {
 	count := 100
-	intsChannel := make(chan int, count)
-	randomPool := New(100, AtomicOffsetRandomConstructor)
+	valuesChannel := make(chan int, count)
+	randomPool := New(100, randomstd.AtomicOffsetConstructor)
 	for i := 0; i < count; i++ {
 		randomPool.Work(func(r randomstd.Random) {
-			intsChannel <- r.Int()
+			valuesChannel <- r.Int()
 		})
 	}
 	for i := 0; i < count; i++ {
-		<-intsChannel
+		<-valuesChannel
 	}
 }
 
 func TestInterface(t *testing.T) {
 	seedValue := time.Now().UnixNano()
 
-	var randomPool randomstd.Random = New(1, func() *rand.Rand {
-		return rand.New(rand.NewSource(seedValue))
+	var randomPool randomstd.Random = New(1, func() randomstd.Random {
+		return randomstd.NaiveSeededConstructor(seedValue)
 	})
-	var randomSingle randomstd.Random = rand.New(rand.NewSource(seedValue))
+	var randomSingle = randomstd.NaiveSeededConstructor(seedValue)
 
 	for i := 0; i < 1000; i++ {
 		a := randomPool.Int()

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/paul-nelson-baker/randomstd"
 	"github.com/paul-nelson-baker/randomstd/pool"
 	"github.com/paul-nelson-baker/randomstd/safe"
 	"io/ioutil"
@@ -92,7 +93,7 @@ func simpleConcurrentRandom(size int) int64 {
 }
 
 func createPooledConcurrentRandom(poolSize int) func(size int) int64 {
-	randomPool := pool.New(poolSize, pool.NaiveRandomConstructor)
+	randomPool := pool.New(poolSize, randomstd.NaiveConstructor)
 	a := func(size int) int64 {
 		wg := sync.WaitGroup{}
 		wg.Add(size)
@@ -100,7 +101,7 @@ func createPooledConcurrentRandom(poolSize int) func(size int) int64 {
 		for i := 0; i < size; i++ {
 			go func() {
 				defer wg.Done()
-				randomPool.Work(func(rand *rand.Rand) {
+				randomPool.Work(func(rand randomstd.Random) {
 					lameUUID(rand)
 				})
 			}()
@@ -112,7 +113,7 @@ func createPooledConcurrentRandom(poolSize int) func(size int) int64 {
 	return a
 }
 
-func lameUUID(random *rand.Rand) string {
+func lameUUID(random randomstd.Random) string {
 	b := bytes.Buffer{}
 	for i := 0; i < 8; i++ {
 		b.WriteString(value(random))
@@ -136,7 +137,7 @@ func lameUUID(random *rand.Rand) string {
 	return b.String()
 }
 
-func value(random *rand.Rand) string {
+func value(random randomstd.Random) string {
 	i := random.Int63n(16)
 	return strconv.FormatInt(i, 16)
 }

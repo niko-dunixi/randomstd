@@ -16,7 +16,7 @@ func main() {
 	// and not worry about managing the random itself. We just
 	// call random's methods like normal and let the concurrency
 	// magic happen on its own!
-	var r randomstd.Random = pool.New(150, pool.AtomicOffsetRandomConstructor)
+	var r randomstd.Random = pool.New(150, randomstd.AtomicOffsetConstructor)
 	for i := 0; i < count; i++ {
 		go func() {
 			uuidChannel <- lameUUID(r)
