@@ -6,11 +6,9 @@ import (
 	"sync"
 )
 
-type RandomPoolTask func(r randomstd.Random)
-
 type RandomPool interface {
 	randomstd.Random
-	Work(task RandomPoolTask)
+	Work(task randomstd.RandomConsumer)
 }
 
 type pool struct {
@@ -38,7 +36,7 @@ func New(size int, rc randomstd.Constructor) RandomPool {
 	return &pool
 }
 
-func (p pool) Work(task RandomPoolTask) {
+func (p pool) Work(task randomstd.RandomConsumer) {
 	r := <-p.workers
 	defer func() {
 		p.workers <- r

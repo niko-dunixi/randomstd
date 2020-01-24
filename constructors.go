@@ -7,6 +7,8 @@ import (
 )
 
 type Constructor func() Random
+type RandomSupplier Constructor
+type RandomConsumer func(r Random)
 
 var (
 	rootSeed        = time.Now().UnixNano()
