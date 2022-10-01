@@ -58,7 +58,7 @@ func main() {
 	var r randomstd.Random = pool.New(150, pool.AtomicOffsetRandomConstructor)
 	for i := 0; i < count; i++ {
 		go func() {
-			uuidChannel <- lameUUID(r)
+			uuidChannel <- naiveUUID(r)
 		}()
 	}
 
@@ -68,7 +68,7 @@ func main() {
 	close(uuidChannel)
 }
 
-func lameUUID(r randomstd.Random) string {
+func naiveUUID(r randomstd.Random) string {
 	b := strings.Builder{}
 	for i := 0; i < 8; i++ {
 		b.WriteString(value(r))
